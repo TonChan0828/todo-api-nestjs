@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: todo-postgres
+    environment:
+      # データベースの基本設定
+      POSTGRES_DB: todoapp          # データベース名
+      POSTGRES_USER: todouser       # ユーザー名
+      POSTGRES_PASSWORD: todopass   # パスワード
+    ports:
+      - "5434:5432"  # ホスト:コンテナのポート番号
+    volumes:
+      # データを永続化するためのボリューム
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  # PostgreSQLのデータを保存するボリューム
+  postgres_data:

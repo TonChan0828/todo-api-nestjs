@@ -69,7 +69,7 @@ export class TodoService {
       await this.findOne(id);
 
       const todo = await this.prisma.todo.update({
-        where: id{ id },
+        where: { id },
         data: {updateTodoDto},
       });
     
@@ -85,7 +85,7 @@ export class TodoService {
   }
 
   // Todoを削除するメソッド
-  async remove(id: number): Promise < Todo > {
+  async remove(id: number): Promise<Todo> {
     try{
       await this.findOne(id);
       const todo = await this.prisma.todo.delete({
@@ -96,7 +96,7 @@ export class TodoService {
       return todo;
     }catch (error) {
       if (error instanceof NotFoundException) {
-        thorw error;
+        throw error;
       }
       console.error('Todo Delete Error:', error);
       throw new Error('Todo delete failed')

@@ -1,8 +1,8 @@
-import { Injectable,NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
-import { PrismaService } from '..prisma/prisma.service';
-import {Todo} from '@prisma/client';
+import { PrismaService } from '../prisma/prisma.service';
+import type { Todo } from '@prisma/client';
 
 @Injectable()
 export class TodoService {
@@ -42,7 +42,7 @@ export class TodoService {
     }
   }
   // IDでTodoを取得するメソッド
-  async findOne (id: number: ): Promise<Todo> {
+  async findOne (id: number ): Promise<Todo> {
     try {
       const todo = await this.prisma.todo.findUnique({
         where: { id },
@@ -70,7 +70,7 @@ export class TodoService {
 
       const todo = await this.prisma.todo.update({
         where: { id },
-        data: {updateTodoDto},
+        data: updateTodoDto,
       });
     
     console.log(`Todo Updated ID = ${id}, Title = ${todo.title}`);

@@ -17,6 +17,6 @@ export class CreateTodoDto {
     @ApiProperty({ description: 'タスクの説明', maxLength: 500, required: false,example: '牛乳とパンを買う' })
     @IsString({message: '説明は文字列でなければなりません'})
     @IsOptional()
-    @MaxLength(500,message: '説明は500文字以下でなければなりません'})
+    @MaxLength(500, {message: '説明は500文字以下でなければなりません'})
     description?: string;
 }

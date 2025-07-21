@@ -19,7 +19,7 @@ export class TodoService {
         },
       });
 
-      console.log(`Todo Created: ID=@{todo.id}, Title=${todo.title}`);
+      console.log(`Todo Created: ID=${todo.id}, Title=${todo.title}`);
       return todo;
     } catch (error) {
       console.error('Todo Created Error:', error);

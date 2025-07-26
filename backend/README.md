@@ -96,3 +96,71 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+
+
+## API 仕様
+
+### 基本情報
+
+- デフォルトポート: `3001`
+- Swagger: `http://localhost:3001/api`
+
+### エンドポイント一覧
+
+| メソッド | パス | 説明 |
+| --- | --- | --- |
+| `POST` | `/todo` | Todo を新規作成 |
+| `GET` | `/todo` | Todo 一覧を取得 |
+| `GET` | `/todo/:id` | ID を指定して Todo を取得 |
+| `PATCH` | `/todo/:id` | ID を指定して Todo を更新 |
+| `DELETE` | `/todo/:id` | ID を指定して Todo を削除 |
+
+### リクエストボディ例
+
+`POST /todo`
+
+```json
+{
+  "title": "買い物に行く",
+  "description": "牛乳とパンを買う"
+}
+```
+
+`PATCH /todo/:id`
+
+```json
+{
+  "title": "タイトル更新",
+  "description": "説明更新",
+  "completed": true
+}
+```
+
+### レスポンス例
+
+```json
+{
+  "id": 1,
+  "title": "買い物に行く",
+  "description": "牛乳とパンを買う",
+  "completed": false,
+  "createdAt": "2024-01-01T00:00:00.000Z",
+  "updatedAt": "2024-01-01T00:00:00.000Z"
+}
+```
+
+### データモデル
+
+`prisma/schema.prisma` より
+
+```prisma
+model Todo {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  completed   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("todos")
+}

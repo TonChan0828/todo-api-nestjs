@@ -11,6 +11,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaService } from './prisma/prisma.service';
 import { TodoModule } from './todo/todo.module';
+import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
 
 /**
  * AppModule
@@ -22,7 +24,7 @@ import { TodoModule } from './todo/todo.module';
  * - Providers: 依存性の注入
  */
 @Module({
-  imports: [TodoModule],
+  imports: [TodoModule, UsersModule, AuthModule],
   controllers: [AppController],
   providers: [AppService, PrismaService],
 })

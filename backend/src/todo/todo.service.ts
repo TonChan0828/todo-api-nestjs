@@ -10,12 +10,12 @@ export class TodoService {
   constructor(private prisma: PrismaService) {}
 
   // 新しいTodoを作成するメソッド
-  async create (createTodoDto: CreateTodoDto): Promise<Todo> {
+  async create(userId: number, createTodoDto: CreateTodoDto): Promise<Todo> {
     try {
       const todo = await this.prisma.todo.create({
         data: {
-          title: createTodoDto.title,
-          description: createTodoDto.description,
+          ...createTodoDto,
+          userId,
         },
       });
 
@@ -28,9 +28,10 @@ export class TodoService {
   }
 
   // Todoの一覧を取得するメソッド
-  async findAll (): Promise<Todo[]> {
+  async findAll(userId: number): Promise<Todo[]> {
     try {
       const todos = await this.prisma.todo.findMany({
+        where: { userId },
         orderBy: { createdAt: 'desc' },
       });
 
@@ -42,10 +43,10 @@ export class TodoService {
     }
   }
   // IDでTodoを取得するメソッド
-  async findOne (id: number ): Promise<Todo> {
+  async findOne(userId: number, id: number): Promise<Todo> {
     try {
       const todo = await this.prisma.todo.findUnique({
-        where: { id },
+        where: { id, userId },
       });
 
       if (!todo) {
@@ -64,42 +65,46 @@ export class TodoService {
   }
 
   // Todoを更新するメソッド
-  async update(id: number, updateTodoDto: UpdateTodoDto):Promise<Todo> {
+  async update(
+    userId: number,
+    id: number,
+    updateTodoDto: UpdateTodoDto,
+  ): Promise<Todo> {
     try {
-      await this.findOne(id);
+      await this.findOne(userId, id);
 
       const todo = await this.prisma.todo.update({
         where: { id },
         data: updateTodoDto,
       });
-    
-    console.log(`Todo Updated ID = ${id}, Title = ${todo.title}`);
-    return todo;
-  } catch (error) {
-    if (error instanceof NotFoundException) {
-      throw error;
-    }
-    console.error('Todo Update Error:', error);
-    throw new Error('Todo update failded');
+
+      console.log(`Todo Updated ID = ${id}, Title = ${todo.title}`);
+      return todo;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      console.error('Todo Update Error:', error);
+      throw new Error('Todo update failded');
     }
   }
 
   // Todoを削除するメソッド
-  async remove(id: number): Promise<Todo> {
-    try{
-      await this.findOne(id);
+  async remove(userId: number, id: number): Promise<Todo> {
+    try {
+      await this.findOne(userId, id);
       const todo = await this.prisma.todo.delete({
         where: { id },
       });
 
       console.log(`Todo Deleted ID = ${id}, Title = ${todo.title}`);
       return todo;
-    }catch (error) {
+    } catch (error) {
       if (error instanceof NotFoundException) {
         throw error;
       }
       console.error('Todo Delete Error:', error);
-      throw new Error('Todo delete failed')
+      throw new Error('Todo delete failed');
     }
   }
 }

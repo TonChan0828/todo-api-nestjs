@@ -14,7 +14,6 @@ async function main() {
 
   await prisma.todo.updateMany({
     data: { userId: admin.id },
-    where: { userId: { equals: null } },
   });
 }
 

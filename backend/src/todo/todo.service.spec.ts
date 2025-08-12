@@ -10,6 +10,7 @@ function createPrismaMock() {
       create: jest.fn(),
       findMany: jest.fn(),
       findUnique: jest.fn(),
+      findFirst: jest.fn(),
       update: jest.fn(),
       delete: jest.fn(),
     },
@@ -19,6 +20,7 @@ function createPrismaMock() {
 describe('TodoService', () => {
   let service: TodoService;
   let prisma: ReturnType<typeof createPrismaMock>;
+  const userId = 42;
 
   beforeEach(async () => {
     prisma = createPrismaMock();
@@ -39,6 +41,7 @@ describe('TodoService', () => {
     const now = new Date();
     prisma.todo.create.mockResolvedValue({
       id: 1,
+      userId,
       title: dto.title,
       description: dto.description,
       completed: false,
@@ -46,21 +49,22 @@ describe('TodoService', () => {
       updatedAt: now,
     });
 
-    await expect(service.create(dto)).resolves.toMatchObject({
+    await expect(service.create(userId, dto)).resolves.toMatchObject({
       id: 1,
       title: '買い物に行く',
       description: '牛乳とパン',
     });
 
     expect(prisma.todo.create).toHaveBeenCalledWith({
-      data: { title: dto.title, description: dto.description },
+      data: { title: dto.title, description: dto.description, userId },
     });
   });
 
   it('findAll: 作成日時の降順で全件取得する', async () => {
     prisma.todo.findMany.mockResolvedValue([]);
-    await service.findAll();
+    await service.findAll(userId);
     expect(prisma.todo.findMany).toHaveBeenCalledWith({
+      where: { userId },
       orderBy: { createdAt: 'desc' },
     });
   });
@@ -76,13 +80,15 @@ describe('TodoService', () => {
       updatedAt: now,
     });
 
-    await expect(service.findOne(1)).resolves.toMatchObject({ id: 1 });
-    expect(prisma.todo.findUnique).toHaveBeenCalledWith({ where: { id: 1 } });
+    await expect(service.findOne(userId, 1)).resolves.toMatchObject({ id: 1 });
+    expect(prisma.todo.findUnique).toHaveBeenCalledWith({
+      where: { id: 1, userId },
+    });
   });
 
   it('findOne: 見つからない場合は NotFoundException を投げる', async () => {
     prisma.todo.findUnique.mockResolvedValue(null);
-    await expect(service.findOne(999)).rejects.toBeInstanceOf(
+    await expect(service.findOne(userId, 999)).rejects.toBeInstanceOf(
       NotFoundException,
     );
   });
@@ -107,7 +113,7 @@ describe('TodoService', () => {
     });
 
     await expect(
-      service.update(1, { title: '更新後', completed: true }),
+      service.update(userId, 1, { title: '更新後', completed: true }),
     ).resolves.toMatchObject({ id: 1, title: '更新後', completed: true });
 
     expect(prisma.todo.update).toHaveBeenCalledWith({
@@ -130,7 +136,7 @@ describe('TodoService', () => {
     prisma.todo.findUnique.mockResolvedValue(existing);
     prisma.todo.delete.mockResolvedValue(existing);
 
-    await expect(service.remove(1)).resolves.toMatchObject({ id: 1 });
+    await expect(service.remove(userId, 1)).resolves.toMatchObject({ id: 1 });
     expect(prisma.todo.delete).toHaveBeenCalledWith({ where: { id: 1 } });
   });
 });
